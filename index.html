@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PATH: Sakin Blok Bulmaca</title>
+<meta name="description" content="PATH: blokları yerleştir, yolu aç. 1000 seviyelik sakin bir blok bulmaca yolculuğu. / A cozy journey through 1000 block puzzle levels.">
+<link rel="icon" href="icon.png">
+<style>
+  :root { --bg: #fbf6ee; --ink: #2c2741; --soft: #6c6680; --line: #e9e1d4; --accent: #c8612f; color-scheme: light; }
+  @media (prefers-color-scheme: dark) { :root { --bg: #1b1928; --ink: #f4ecdf; --soft: #b3aac6; --line: #39344f; --accent: #f08a55; color-scheme: dark; } }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font: 16px/1.6 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; padding: 24px 16px 56px; }
+  main { max-width: 760px; margin: 0 auto; display: grid; gap: 28px; }
+  header { display: flex; gap: 18px; align-items: center; }
+  header img { width: 88px; height: 88px; border-radius: 20px; }
+  h1 { margin: 0; font-size: 30px; line-height: 1.15; }
+  h2 { margin: 0 0 8px; font-size: 20px; }
+  p { margin: 0; }
+  .soft { color: var(--soft); }
+  .hero { width: 100%; border-radius: 16px; display: block; }
+  .cols { display: grid; grid-template-columns: 1fr 1fr; gap: 28px; }
+  nav { display: flex; flex-wrap: wrap; gap: 10px 22px; border-top: 1px solid var(--line); padding-top: 18px; }
+  a { color: var(--accent); }
+  @media (max-width: 620px) { .cols { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+<main>
+  <header>
+    <img src="icon.png" alt="PATH simgesi / app icon">
+    <div>
+      <h1>PATH</h1>
+      <p class="soft">Sakin Blok Bulmaca · Cozy Block Puzzle</p>
+    </div>
+  </header>
+  <img class="hero" src="feature.jpg" alt="Gün batımında kamp ve yol / A camp and a path at sunset">
+  <div class="cols">
+    <section lang="tr">
+      <h2>Türkçe</h2>
+      <p>Blokları yerleştir, yolu aç! Her çözdüğün seviye gezginin önündeki yolu açıyor. 1000 seviye, 41 bölüm ve 9 dünya; zaman sınırı yok, internet gerekmez.</p>
+    </section>
+    <section lang="en">
+      <h2>English</h2>
+      <p>Place blocks, clear the path! Every level you solve opens the way ahead of your traveller. 1000 levels, 41 chapters and 9 worlds; no timers, no internet needed.</p>
+    </section>
+  </div>
+  <nav>
+    <a href="privacy.html">Gizlilik Politikası / Privacy Policy</a>
+    <span class="soft">İletişim / Contact: farukoz.dev@gmail.com</span>
+  </nav>
+</main>
+</body>
+</html>
