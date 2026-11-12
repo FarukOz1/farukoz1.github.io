@@ -4,74 +4,330 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>PATH Block Puzzle</title>
-<meta name="description" content="PATH: blokları yerleştir, yolu aç. 1000 seviyelik sakin bir blok bulmaca yolculuğu. / A cozy journey through 1000 block puzzle levels.">
+<meta name="description" content="PATH: blokları yerleştir, yolu aç. Gezginin yolunu bulmacalarla açtığın sakin bir blok bulmaca macerası. / Place blocks, clear the path: a cozy block puzzle adventure.">
+<meta property="og:title" content="PATH Block Puzzle">
+<meta property="og:description" content="Blokları yerleştir, yolu aç. Sakin bir blok bulmaca macerası.">
+<meta property="og:image" content="https://farukoz1.github.io/img/hero.jpg">
+<meta property="og:type" content="website">
+<meta name="twitter:card" content="summary_large_image">
 <link rel="icon" href="icon.png">
+<link rel="apple-touch-icon" href="icon.png">
+<link rel="preload" href="fonts/FredokaTR-SemiBold.ttf" as="font" type="font/ttf" crossorigin>
 <style>
-  :root { --bg: #fbf6ee; --ink: #2c2741; --soft: #6c6680; --line: #e9e1d4; --accent: #c8612f; color-scheme: light; }
-  @media (prefers-color-scheme: dark) { :root { --bg: #1b1928; --ink: #f4ecdf; --soft: #b3aac6; --line: #39344f; --accent: #f08a55; color-scheme: dark; } }
+  @font-face { font-family: "Fredoka TR"; src: url("fonts/FredokaTR-SemiBold.ttf") format("truetype"); font-weight: 600; font-display: swap; }
+  @font-face { font-family: "Nunito"; src: url("fonts/Nunito.ttf") format("truetype"); font-weight: 200 1000; font-display: swap; }
+
+  :root {
+    --bg: #fbf6ee;
+    --card: #fffaf2;
+    --ink: #2f2a3d;
+    --soft: #6e6779;
+    --line: #ebe1d1;
+    --accent: #e0632f;
+    --sky: #e3eff6;
+    --shadow: 0 10px 30px rgba(47, 42, 61, .10);
+    color-scheme: light;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #17161f;
+      --card: #211f2b;
+      --ink: #f4ede2;
+      --soft: #b4abc0;
+      --line: #35314a;
+      --accent: #f2804e;
+      --sky: #1d2233;
+      --shadow: 0 10px 30px rgba(0, 0, 0, .35);
+      color-scheme: dark;
+    }
+  }
+
   * { box-sizing: border-box; }
-  body { margin: 0; background: var(--bg); color: var(--ink); font: 16px/1.6 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; padding: 24px 16px 56px; }
-  main { max-width: 760px; margin: 0 auto; display: grid; gap: 28px; }
-  header { display: flex; gap: 18px; align-items: center; }
-  header img { width: 88px; height: 88px; border-radius: 20px; }
-  h1 { margin: 0; font-size: 30px; line-height: 1.15; }
-  h2 { margin: 0 0 8px; font-size: 20px; }
-  p { margin: 0; }
-  .soft { color: var(--soft); }
-  .hero { width: 100%; border-radius: 16px; display: block; }
-  .cols { display: grid; grid-template-columns: 1fr 1fr; gap: 28px; }
-  .downloads { display: grid; gap: 12px; }
-  .downloads h2 { margin-bottom: 0; }
-  .download-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
-  .download-btn { min-height: 72px; display: flex; align-items: center; gap: 14px; padding: 14px 18px; border: 1px solid var(--line); border-radius: 16px; background: color-mix(in srgb, var(--bg) 88%, white); color: var(--ink); text-decoration: none; box-shadow: 0 3px 10px #2c27410d; transition: transform .15s ease, box-shadow .15s ease; }
-  .download-btn:hover { transform: translateY(-2px); box-shadow: 0 7px 18px #2c27411a; }
-  .download-btn:focus-visible { outline: 3px solid var(--accent); outline-offset: 3px; }
-  .store-mark { width: 34px; height: 34px; flex: 0 0 34px; }
-  .download-label { display: grid; line-height: 1.3; }
-  .download-label strong { font-size: 16px; }
-  .download-label span { color: var(--soft); font-size: 13px; }
-  nav { display: flex; flex-wrap: wrap; gap: 10px 22px; border-top: 1px solid var(--line); padding-top: 18px; }
+  html { scroll-behavior: smooth; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font: 17px/1.6 "Nunito", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; -webkit-font-smoothing: antialiased; }
+  h1, h2, h3, .brand, .btn { font-family: "Fredoka TR", "Nunito", system-ui, sans-serif; font-weight: 600; }
   a { color: var(--accent); }
-  @media (max-width: 620px) { .cols, .download-grid { grid-template-columns: 1fr; } }
+  img { display: block; max-width: 100%; height: auto; }
+  .wrap { width: min(1120px, 100% - 32px); margin: 0 auto; }
+
+  /* Both languages are in the page; the root class shows one. */
+  html.en body [lang="tr"], html:not(.en) body [lang="en"] { display: none !important; }
+
+  /* Top bar, over the hero */
+  .top { position: absolute; inset: 0 0 auto 0; z-index: 3; }
+  .top .wrap { display: flex; align-items: center; justify-content: space-between; padding: 16px 0; }
+  .brand { display: flex; align-items: center; gap: 10px; font-size: 22px; color: #2f2a3d; text-decoration: none; }
+  .brand img { width: 40px; height: 40px; border-radius: 11px; box-shadow: 0 4px 12px rgba(0,0,0,.15); }
+  .lang { display: flex; gap: 4px; padding: 4px; border-radius: 999px; background: rgba(255,255,255,.8); backdrop-filter: blur(8px); box-shadow: 0 4px 14px rgba(0,0,0,.08); }
+  .lang button { border: 0; background: transparent; padding: 6px 12px; border-radius: 999px; font: 700 14px "Nunito", system-ui, sans-serif; color: #4a4458; cursor: pointer; }
+  .lang button[aria-pressed="true"] { background: #2f2a3d; color: #fff; }
+
+  /* Hero: a sky gradient sampled from the art's left edge; the island art is anchored
+     right and fades into it, so the headline always sits on clear sky at any width. */
+  .hero { position: relative; min-height: clamp(560px, 80vh, 740px); display: grid; align-items: center; overflow: hidden; background: linear-gradient(180deg, #d3e6ea 0%, #e3e8df 50%, #f8e3cd 100%); }
+  .hero-bg { position: absolute; top: 0; right: 0; bottom: 0; width: min(66%, 1240px); background: url("img/hero.jpg") 60% 50% / cover no-repeat; -webkit-mask-image: linear-gradient(90deg, transparent 0, #000 26%); mask-image: linear-gradient(90deg, transparent 0, #000 26%); }
+  .hero .wrap { position: relative; z-index: 2; padding: 110px 0 72px; }
+  .hero-text { max-width: min(470px, 40%); color: #2f2a3d; }
+  .eyebrow { display: inline-block; padding: 4px 12px; border-radius: 999px; background: rgba(255,255,255,.85); color: #4f8a35; font-weight: 800; font-size: 13px; letter-spacing: .06em; text-transform: uppercase; }
+  .hero h1 { margin: 14px 0 12px; font-size: clamp(42px, 6vw, 68px); line-height: 1.02; letter-spacing: -.01em; }
+  .hero p.lead { margin: 0 0 26px; font-size: clamp(18px, 2vw, 21px); color: #4a4458; }
+  .stores { display: flex; flex-wrap: wrap; gap: 12px; }
+  .btn { display: inline-flex; align-items: center; gap: 12px; min-height: 58px; padding: 10px 20px 10px 16px; border-radius: 16px; text-decoration: none; transition: transform .15s ease; }
+  .btn:hover { transform: translateY(-2px); }
+  .btn:focus-visible, .lang button:focus-visible { outline: 3px solid var(--accent); outline-offset: 3px; }
+  .btn svg { width: 28px; height: 28px; flex: 0 0 28px; }
+  .btn .label { display: grid; line-height: 1.15; text-align: left; }
+  .btn .label small { font: 700 12px "Nunito", system-ui, sans-serif; opacity: .8; }
+  .btn .label span { font-size: 19px; }
+  .btn.dark { background: #2f2a3d; color: #fff; box-shadow: 0 8px 22px rgba(47,42,61,.28); }
+  .btn.light { background: #fff; color: #2f2a3d; box-shadow: 0 8px 22px rgba(47,42,61,.14); }
+  .hero-art { display: none; }
+
+  /* Sections */
+  section { padding: 76px 0; }
+  .head { max-width: 640px; margin: 0 auto 38px; text-align: center; }
+  .head h2 { margin: 0 0 10px; font-size: clamp(30px, 4vw, 40px); line-height: 1.1; }
+  .head p { margin: 0; color: var(--soft); }
+
+  .features { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
+  .feature { background: var(--card); border: 1px solid var(--line); border-radius: 22px; padding: 24px; box-shadow: var(--shadow); }
+  .feature .ico { width: 52px; height: 52px; border-radius: 16px; display: grid; place-items: center; font-size: 26px; margin-bottom: 14px; }
+  .feature h3 { margin: 0 0 6px; font-size: 21px; }
+  .feature p { margin: 0; color: var(--soft); font-size: 16px; }
+  .i1 { background: #fde3d4; } .i2 { background: #dcefd2; } .i3 { background: #ffe9b8; }
+  .i4 { background: #ffd9c4; } .i5 { background: #dbe6fb; } .i6 { background: #e9e0f7; }
+
+  /* Screens: a horizontal, snapping strip of real game frames. */
+  .screens { background: var(--sky); }
+  .strip { display: grid; grid-auto-flow: column; grid-auto-columns: minmax(200px, 250px); gap: 18px; overflow-x: auto; padding: 6px 4px 22px; scroll-snap-type: x mandatory; scrollbar-width: thin; }
+  .strip figure { margin: 0; scroll-snap-align: center; }
+  .strip img { width: 100%; aspect-ratio: 9 / 16; object-fit: cover; border-radius: 26px; box-shadow: var(--shadow); border: 4px solid #fff; background: #ddd; }
+  .strip figcaption { margin-top: 10px; text-align: center; font-weight: 700; color: var(--soft); font-size: 15px; }
+
+  /* Offline + friends */
+  .friends { display: grid; grid-template-columns: 1.1fr .9fr; gap: 40px; align-items: center; }
+  .friends h2 { margin: 0 0 12px; font-size: clamp(30px, 4vw, 40px); line-height: 1.1; }
+  .friends p { margin: 0 0 12px; color: var(--soft); }
+  .badges { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 18px; }
+  .badge { padding: 8px 14px; border-radius: 999px; background: var(--card); border: 1px solid var(--line); font-weight: 700; font-size: 15px; }
+  .friends img { border-radius: 26px; box-shadow: var(--shadow); width: 100%; aspect-ratio: 4 / 3; object-fit: cover; object-position: 70% 50%; }
+
+  /* Closing call */
+  .cta { text-align: center; }
+  .cta .card { background: linear-gradient(135deg, #ffe7d6, #fff4df); border-radius: 30px; padding: 48px 24px; color: #2f2a3d; box-shadow: var(--shadow); }
+  .cta h2 { margin: 0 0 10px; font-size: clamp(30px, 4vw, 40px); }
+  .cta p { margin: 0 auto 24px; max-width: 560px; color: #5b5468; }
+  .cta .stores { justify-content: center; }
+  .cta img.icon { width: 96px; height: 96px; border-radius: 24px; margin: 0 auto 18px; box-shadow: 0 10px 24px rgba(0,0,0,.15); }
+
+  footer { padding: 0 0 48px; color: var(--soft); font-size: 15px; }
+  footer .wrap { display: flex; flex-wrap: wrap; gap: 10px 26px; justify-content: space-between; border-top: 1px solid var(--line); padding-top: 22px; }
+  footer nav { display: flex; flex-wrap: wrap; gap: 8px 20px; }
+
+  @media (max-width: 900px) {
+    .hero-text { max-width: 46%; }
+    .hero h1 { font-size: 40px; }
+    .features { grid-template-columns: repeat(2, 1fr); }
+    .friends { grid-template-columns: 1fr; }
+  }
+  @media (max-width: 640px) {
+    body { font-size: 16px; }
+    .hero { min-height: 0; display: block; }
+    .hero-bg { display: none; }
+    .hero .wrap { padding: 84px 0 0; }
+    .hero-text { max-width: none; text-align: center; }
+    .hero .stores { justify-content: center; }
+    .hero-art { display: block; width: 100%; margin-top: 26px; aspect-ratio: 16 / 10; object-fit: cover; object-position: 66% 50%; }
+    .features { grid-template-columns: 1fr; }
+    section { padding: 56px 0; }
+    .btn { flex: 1 1 100%; justify-content: center; }
+  }
+  @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } .btn { transition: none; } }
 </style>
+<script>
+  // Pick the language before the page paints: the saved choice, else the browser's.
+  (function () {
+    var saved = null;
+    try { saved = localStorage.getItem("path-lang"); } catch (e) {}
+    var lang = saved || ((navigator.language || "tr").toLowerCase().indexOf("tr") === 0 ? "tr" : "en");
+    if (lang === "en") { document.documentElement.classList.add("en"); document.documentElement.lang = "en"; }
+  })();
+</script>
 </head>
 <body>
-<main>
-  <header>
-    <img src="icon.png" alt="PATH simgesi / app icon">
-    <div>
-      <h1>PATH</h1>
-      <p class="soft">Sakin Blok Bulmaca · Cozy Block Puzzle</p>
+
+<header class="top">
+  <div class="wrap">
+    <a class="brand" href="#top"><img src="icon.png" alt="" width="40" height="40"> PATH</a>
+    <div class="lang" role="group" aria-label="Dil / Language">
+      <button type="button" data-lang="tr">Türkçe</button>
+      <button type="button" data-lang="en">English</button>
     </div>
-  </header>
-  <img class="hero" src="feature.jpg" alt="Gün batımında kamp ve yol / A camp and a path at sunset">
-  <section class="downloads" aria-labelledby="downloads-title">
-    <h2 id="downloads-title">PATH’i indir · Get PATH</h2>
-    <div class="download-grid">
-      <a class="download-btn" href="https://apps.apple.com/tr/app/path-block-puzzle/id6823560518" target="_blank" rel="noopener noreferrer" aria-label="PATH’i App Store’dan indir">
-        <svg class="store-mark" viewBox="0 0 32 32" aria-hidden="true"><path fill="currentColor" d="M21.7 17c0-3.1 2.5-4.6 2.6-4.7a5.6 5.6 0 0 0-4.4-2.4c-1.9-.2-3.7 1.1-4.7 1.1s-2.5-1.1-4.1-1.1a6.1 6.1 0 0 0-5.1 3.1c-2.2 3.8-.6 9.4 1.5 12.5 1 1.5 2.2 3.2 3.8 3.1 1.5-.1 2.1-1 4-1s2.4 1 4.1.9c1.7 0 2.7-1.5 3.7-3 .8-1.1 1.4-2.3 1.8-3.6a5.3 5.3 0 0 1-3.2-4.9ZM18.6 7.9a5.4 5.4 0 0 0 1.2-3.8 5.5 5.5 0 0 0-3.5 1.8 5.1 5.1 0 0 0-1.2 3.7 4.5 4.5 0 0 0 3.5-1.7Z"/></svg>
-        <span class="download-label"><strong>App Store’dan indir</strong><span>iPhone ve iPad · Download for iOS</span></span>
-      </a>
-      <a class="download-btn" href="https://play.google.com/store/apps/details?id=com.farukoz.path" target="_blank" rel="noopener noreferrer" aria-label="PATH’i Google Play’den indir">
-        <svg class="store-mark" viewBox="0 0 32 32" aria-hidden="true"><path fill="#34a853" d="M4 3.2v25.6c0 .8.9 1.3 1.6.9l13-13L5.6 2.3C4.9 1.9 4 2.4 4 3.2Z"/><path fill="#4285f4" d="m5.6 29.7 15.2-8.5-5.1-5.1-10.1 12.7Z"/><path fill="#fbbc04" d="m20.8 10.8-5.1 5.3 5.1 5.1 6.1-3.4c1.2-.7 1.2-2.4 0-3.1l-6.1-3.9Z"/><path fill="#ea4335" d="M5.6 2.3 15.7 16l5.1-5.2L5.6 2.3Z"/></svg>
-        <span class="download-label"><strong>Google Play’den indir</strong><span>Android · Download for Android</span></span>
-      </a>
+  </div>
+</header>
+
+<main id="top">
+  <div class="hero">
+    <div class="hero-bg" aria-hidden="true"></div>
+    <div class="wrap">
+      <div class="hero-text">
+        <span class="eyebrow" lang="tr">Sakin blok bulmaca</span>
+        <span class="eyebrow" lang="en">Cozy block puzzle</span>
+        <h1 lang="tr">Blokları yerleştir, yolu aç.</h1>
+        <h1 lang="en">Place blocks, clear the path.</h1>
+        <p class="lead" lang="tr">Her çözdüğün bulmaca gezginin önündeki engeli kaldırır. Ormandan karlı tepelere uzanan sakin bir yolculuk seni bekliyor.</p>
+        <p class="lead" lang="en">Every puzzle you solve clears the way ahead of your traveller. A calm journey from green forests to snowy hills is waiting.</p>
+        <div class="stores">
+          <a class="btn dark" href="https://apps.apple.com/tr/app/path-block-puzzle/id6823560518" target="_blank" rel="noopener noreferrer">
+            <svg viewBox="0 0 32 32" aria-hidden="true"><path fill="currentColor" d="M21.7 17c0-3.1 2.5-4.6 2.6-4.7a5.6 5.6 0 0 0-4.4-2.4c-1.9-.2-3.7 1.1-4.7 1.1s-2.5-1.1-4.1-1.1a6.1 6.1 0 0 0-5.1 3.1c-2.2 3.8-.6 9.4 1.5 12.5 1 1.5 2.2 3.2 3.8 3.1 1.5-.1 2.1-1 4-1s2.4 1 4.1.9c1.7 0 2.7-1.5 3.7-3 .8-1.1 1.4-2.3 1.8-3.6a5.3 5.3 0 0 1-3.2-4.9ZM18.6 7.9a5.4 5.4 0 0 0 1.2-3.8 5.5 5.5 0 0 0-3.5 1.8 5.1 5.1 0 0 0-1.2 3.7 4.5 4.5 0 0 0 3.5-1.7Z"/></svg>
+            <span class="label"><small lang="tr">App Store'dan indir</small><small lang="en">Download on the</small><span>App Store</span></span>
+          </a>
+          <a class="btn light" href="https://play.google.com/store/apps/details?id=com.farukoz.path" target="_blank" rel="noopener noreferrer">
+            <svg viewBox="0 0 32 32" aria-hidden="true"><path fill="#34a853" d="M4 3.2v25.6c0 .8.9 1.3 1.6.9l13-13L5.6 2.3C4.9 1.9 4 2.4 4 3.2Z"/><path fill="#4285f4" d="m5.6 29.7 15.2-8.5-5.1-5.1-10.1 12.7Z"/><path fill="#fbbc04" d="m20.8 10.8-5.1 5.3 5.1 5.1 6.1-3.4c1.2-.7 1.2-2.4 0-3.1l-6.1-3.9Z"/><path fill="#ea4335" d="M5.6 2.3 15.7 16l5.1-5.2L5.6 2.3Z"/></svg>
+            <span class="label"><small lang="tr">Google Play'den indir</small><small lang="en">Get it on</small><span>Google Play</span></span>
+          </a>
+        </div>
+      </div>
+    </div>
+    <img class="hero-art" src="img/hero-small.jpg" alt="" width="1100" height="614">
+  </div>
+
+  <section>
+    <div class="wrap">
+      <div class="head">
+        <h2 lang="tr">Küçük molalar için sakin bir macera</h2>
+        <h2 lang="en">A calm adventure for small breaks</h2>
+        <p lang="tr">Süre baskısı yok, acele yok. Birkaç bulmaca çöz, gezginin yolunu aç, kampını canlandır.</p>
+        <p lang="en">No timers, no rush. Solve a few puzzles, open your traveller's path and bring the camp back to life.</p>
+      </div>
+      <div class="features">
+        <article class="feature">
+          <div class="ico i1" aria-hidden="true">🧩</div>
+          <h3 lang="tr">Bulmaca yolu açar</h3><h3 lang="en">Puzzles clear the path</h3>
+          <p lang="tr">Satır ya da sütunu doldurup temizle. Her zafer haritadaki bir engeli kaldırır ve gezgin yoluna devam eder.</p>
+          <p lang="en">Fill a row or a column to clear it. Every win removes an obstacle on the map and your traveller walks on.</p>
+        </article>
+        <article class="feature">
+          <div class="ico i2" aria-hidden="true">🌲</div>
+          <h3 lang="tr">9 farklı dünya</h3><h3 lang="en">Nine worlds</h3>
+          <p lang="tr">Orman, çayır, göl, dağ, sonbahar, kar, sulak alan, çiçek bahçesi ve kum tepeleri; her birinin kendi renkleri ve sesleri var.</p>
+          <p lang="en">Forest, meadow, lake, mountain, autumn, snow, wetland, blossom garden and dunes, each with its own colours and sounds.</p>
+        </article>
+        <article class="feature">
+          <div class="ico i3" aria-hidden="true">🦊</div>
+          <h3 lang="tr">Hayvan dostları</h3><h3 lang="en">Animal friends</h3>
+          <p lang="tr">31 sevimli dost arasından seç; en sevdiğin ikisi yolda seninle yürür.</p>
+          <p lang="en">Choose from 31 animal friends; your two favourites walk the path with you.</p>
+        </article>
+        <article class="feature">
+          <div class="ico i4" aria-hidden="true">🔥</div>
+          <h3 lang="tr">Kampı canlandır</h3><h3 lang="en">Revive the camp</h3>
+          <p lang="tr">Kazandığın yol yıldızlarıyla ateşi yak, basamakları onar, kampını kendi zevkine göre süsle.</p>
+          <p lang="en">Spend the Path stars you earn to light the fire, mend the steps and decorate your camp your way.</p>
+        </article>
+        <article class="feature">
+          <div class="ico i5" aria-hidden="true">🤝</div>
+          <h3 lang="tr">Arkadaşlarınla yarış</h3><h3 lang="en">Race your friends</h3>
+          <p lang="tr">Kullanıcı adıyla arkadaş ekle, seviye seviye kimin önde olduğunu gör.</p>
+          <p lang="en">Add friends by username and see who is ahead, level by level.</p>
+        </article>
+        <article class="feature">
+          <div class="ico i6" aria-hidden="true">🎒</div>
+          <h3 lang="tr">Gezginini giydir</h3><h3 lang="en">Dress your traveller</h3>
+          <p lang="tr">Şapkalar, atkılar, ceketler ve çantalar; hepsi oyunda kazanılan altınla.</p>
+          <p lang="en">Hats, scarves, coats and packs, all bought with gold earned in the game.</p>
+        </article>
+      </div>
     </div>
   </section>
-  <div class="cols">
-    <section lang="tr">
-      <h2>Türkçe</h2>
-      <p>Blokları yerleştir, yolu aç! Her çözdüğün seviye gezginin önündeki yolu açıyor. 1000 seviye, 41 bölüm ve 9 dünya; zaman sınırı yok, internet gerekmez.</p>
-    </section>
-    <section lang="en">
-      <h2>English</h2>
-      <p>Place blocks, clear the path! Every level you solve opens the way ahead of your traveller. 1000 levels, 41 chapters and 9 worlds; no timers, no internet needed.</p>
-    </section>
-  </div>
-  <nav>
-    <a href="privacy.html">Gizlilik Politikası / Privacy Policy</a>
-    <span class="soft">İletişim / Contact: farukoz.dev@gmail.com</span>
-  </nav>
+
+  <section class="screens">
+    <div class="wrap">
+      <div class="head">
+        <h2 lang="tr">Oyundan kareler</h2><h2 lang="en">From the game</h2>
+        <p lang="tr">Görüntüler doğrudan oyundan alınmıştır.</p>
+        <p lang="en">Pictures taken straight from the game.</p>
+      </div>
+      <div class="strip">
+        <figure><img src="img/shot-forest.jpg" alt="" loading="lazy" width="540" height="960"><figcaption lang="tr">Fısıldayan Orman</figcaption><figcaption lang="en">Whispering Forest</figcaption></figure>
+        <figure><img src="img/shot-puzzle.jpg" alt="" loading="lazy" width="540" height="960"><figcaption lang="tr">Ateş böceği zinciri</figcaption><figcaption lang="en">A firefly chain</figcaption></figure>
+        <figure><img src="img/shot-snow.jpg" alt="" loading="lazy" width="540" height="960"><figcaption lang="tr">Karlı Vadi</figcaption><figcaption lang="en">Snowy Valley</figcaption></figure>
+        <figure><img src="img/shot-autumn.jpg" alt="" loading="lazy" width="540" height="960"><figcaption lang="tr">Sonbahar Ormanı</figcaption><figcaption lang="en">Autumn Woods</figcaption></figure>
+        <figure><img src="img/shot-blossom.jpg" alt="" loading="lazy" width="540" height="960"><figcaption lang="tr">Çiçek Bahçesi</figcaption><figcaption lang="en">Blossom Garden</figcaption></figure>
+        <figure><img src="img/shot-dunes.jpg" alt="" loading="lazy" width="540" height="960"><figcaption lang="tr">Gün Batımı Kumulları</figcaption><figcaption lang="en">Sunset Dunes</figcaption></figure>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="wrap friends">
+      <div>
+        <h2 lang="tr">İnternetsiz oyna, istersen arkadaşlarınla yarış</h2>
+        <h2 lang="en">Play offline, race friends when you like</h2>
+        <p lang="tr">Bulmacalar, harita ve ilerlemen internet olmadan çalışır; ilerlemen cihazında saklanır.</p>
+        <p lang="en">Puzzles, the map and your progress work without the internet; your progress is kept on your device.</p>
+        <p lang="tr">Arkadaş özelliği isteğe bağlı: iPhone'da Game Center, Android'de Google Play Oyunlar ile giriş yapıp bir kullanıcı adı seçersin. Arkadaşların yalnızca seviyeni görür.</p>
+        <p lang="en">Friends are optional: sign in with Game Center on iPhone or Google Play Games on Android and pick a username. Friends only see your level.</p>
+        <div class="badges">
+          <span class="badge" lang="tr">Ücretsiz</span><span class="badge" lang="en">Free to play</span>
+          <span class="badge" lang="tr">Türkçe · English</span><span class="badge" lang="en">English · Türkçe</span>
+          <span class="badge" lang="tr">Süre baskısı yok</span><span class="badge" lang="en">No timers</span>
+        </div>
+      </div>
+      <img src="img/hero-small.jpg" alt="" loading="lazy" width="1100" height="614">
+    </div>
+  </section>
+
+  <section class="cta">
+    <div class="wrap">
+      <div class="card">
+        <img class="icon" src="icon.png" alt="" width="96" height="96">
+        <h2 lang="tr">Yol seni bekliyor</h2><h2 lang="en">The path is waiting</h2>
+        <p lang="tr">PATH ücretsizdir. İsteğe bağlı reklamlar ve altın paketleri içerir; ilerlemek için hiçbir satın alma gerekmez.</p>
+        <p lang="en">PATH is free to play. It has optional ads and coin packs; no purchase is needed to progress.</p>
+        <div class="stores">
+          <a class="btn dark" href="https://apps.apple.com/tr/app/path-block-puzzle/id6823560518" target="_blank" rel="noopener noreferrer">
+            <svg viewBox="0 0 32 32" aria-hidden="true"><path fill="currentColor" d="M21.7 17c0-3.1 2.5-4.6 2.6-4.7a5.6 5.6 0 0 0-4.4-2.4c-1.9-.2-3.7 1.1-4.7 1.1s-2.5-1.1-4.1-1.1a6.1 6.1 0 0 0-5.1 3.1c-2.2 3.8-.6 9.4 1.5 12.5 1 1.5 2.2 3.2 3.8 3.1 1.5-.1 2.1-1 4-1s2.4 1 4.1.9c1.7 0 2.7-1.5 3.7-3 .8-1.1 1.4-2.3 1.8-3.6a5.3 5.3 0 0 1-3.2-4.9ZM18.6 7.9a5.4 5.4 0 0 0 1.2-3.8 5.5 5.5 0 0 0-3.5 1.8 5.1 5.1 0 0 0-1.2 3.7 4.5 4.5 0 0 0 3.5-1.7Z"/></svg>
+            <span class="label"><small lang="tr">App Store'dan indir</small><small lang="en">Download on the</small><span>App Store</span></span>
+          </a>
+          <a class="btn light" href="https://play.google.com/store/apps/details?id=com.farukoz.path" target="_blank" rel="noopener noreferrer">
+            <svg viewBox="0 0 32 32" aria-hidden="true"><path fill="#34a853" d="M4 3.2v25.6c0 .8.9 1.3 1.6.9l13-13L5.6 2.3C4.9 1.9 4 2.4 4 3.2Z"/><path fill="#4285f4" d="m5.6 29.7 15.2-8.5-5.1-5.1-10.1 12.7Z"/><path fill="#fbbc04" d="m20.8 10.8-5.1 5.3 5.1 5.1 6.1-3.4c1.2-.7 1.2-2.4 0-3.1l-6.1-3.9Z"/><path fill="#ea4335" d="M5.6 2.3 15.7 16l5.1-5.2L5.6 2.3Z"/></svg>
+            <span class="label"><small lang="tr">Google Play'den indir</small><small lang="en">Get it on</small><span>Google Play</span></span>
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
 </main>
+
+<footer>
+  <div class="wrap">
+    <span>© 2026 Faruk Emre Öz</span>
+    <nav>
+      <a href="privacy.html" lang="tr">Gizlilik Politikası</a>
+      <a href="privacy.html#en" lang="en">Privacy Policy</a>
+      <a href="mailto:farukoz.dev@gmail.com">farukoz.dev@gmail.com</a>
+    </nav>
+  </div>
+</footer>
+
+<script>
+  (function () {
+    var root = document.documentElement;
+    var buttons = document.querySelectorAll(".lang button");
+    function apply(lang) {
+      root.classList.toggle("en", lang === "en");
+      root.lang = lang;
+      buttons.forEach(function (b) { b.setAttribute("aria-pressed", String(b.dataset.lang === lang)); });
+    }
+    apply(root.classList.contains("en") ? "en" : "tr");
+    buttons.forEach(function (b) {
+      b.addEventListener("click", function () {
+        apply(b.dataset.lang);
+        try { localStorage.setItem("path-lang", b.dataset.lang); } catch (e) {}
+      });
+    });
+  })();
+</script>
 </body>
 </html>
